@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+youtube-transcript-api
+google-generativeai
+yt-dlp
+weasyprint
+jinja2
+python-multipart
+requests
+beautifulsoup4
+pydantic-settings
+ffmpeg-python
+gunicorn
