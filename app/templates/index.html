@@ -3,44 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Course Notes</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Super-Learning - AI Note Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>AI Course Notes</h1>
-            <p class="subtitle">Turn YouTube lectures into genius-level notes.</p>
-        </header>
-
+        <h1>Super-Learning</h1>
+        <p>Transform YouTube videos into comprehensive study notes</p>
+        
         <div class="input-group">
-            <input type="text" id="videoUrl" placeholder="Paste YouTube URL here..." autocomplete="off">
+            <input type="text" id="videoUrl" placeholder="Enter YouTube URL">
             <select id="videoType">
                 <option value="stanford">Stanford AI Course</option>
-                <option value="dsa">DSA & Interviews</option>
+                <option value="dsa">DSA & Interview Prep</option>
                 <option value="podcast">Podcast / Tech Talk</option>
                 <option value="cheatsheet">Cheat Sheet</option>
             </select>
             <button id="generateBtn">Generate Notes</button>
         </div>
-
-        <div id="loading" class="hidden">
+        
+        <div id="loading" style="display: none;">
+            <p>Analyzing video and generating notes...</p>
             <div class="spinner"></div>
-            <p>Analyzing video and generating deep comprehension notes...</p>
         </div>
-
-        <div id="result" class="result-container hidden">
-            <div class="result-header">
-                <h2>Generated Notes</h2>
-                <button id="downloadPdfBtn" class="secondary-button">Download PDF</button>
+        
+        <div id="logContainer" style="display: none;">
+            <div class="log-header">
+                <h3>Generation Progress</h3>
+                <button id="toggleLogsBtn" class="toggle-btn">Hide Logs</button>
             </div>
-            <div id="notesContent"></div>
+            <div id="logOutput" class="log-output"></div>
+        </div>
+        
+        <div id="result" style="display: none;">
+            <div class="result-header">
+                <div class="metadata">
+                    <h2 id="videoTitle"></h2>
+                    <p>Duration: <span id="videoDuration"></span></p>
+                </div>
+                <button id="downloadBtn" class="download-btn">Download PDF</button>
+            </div>
+            <div id="notesContent" class="notes-content"></div>
         </div>
     </div>
-    <script src="/static/app.js"></script>
+    
+    <script src="{{ url_for('static', path='/app.js') }}"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form, HTTPException, Response
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -9,10 +9,15 @@ import os
 import logging
 import time
 from app.core.logger import configure_logging
+from app.core.log_streamer import log_streamer
+import asyncio
 
 # Configure Logging
 configure_logging()
 logger = logging.getLogger(__name__)
+
+# Add log streamer to root logger
+logging.getLogger().addHandler(log_streamer)
 
 app = FastAPI()
 
@@ -38,6 +43,34 @@ class VideoRequest(BaseModel):
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/logs/stream")
+async def stream_logs():
+    """Server-Sent Events endpoint for streaming logs"""
+    
+    async def event_generator():
+        q = log_streamer.add_client()
+        try:
+            while True:
+                # Wait for new log message
+                try:
+                    msg = q.get(timeout=1)
+                    yield f"data: {msg}\n\n"
+                except:
+                    # Send heartbeat to keep connection alive
+                    yield f": heartbeat\n\n"
+                await asyncio.sleep(0.1)
+        finally:
+            log_streamer.remove_client(q)
+    
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        }
+    )
+
 @app.post("/generate")
 async def generate(request: VideoRequest):
     logger.info(f"🚀 Received generation request for URL: {request.url} | Type: {request.video_type}")
@@ -56,7 +89,7 @@ async def generate(request: VideoRequest):
         logger.info(f"✅ Metadata fetched: {metadata.get('title', 'Unknown')}")
         
         logger.info("4️⃣  Sending to Gemini for Note Generation (This may take time)...")
-        notes = generate_notes(transcript, request.video_type, metadata, video_id) # Pass video_id for archival
+        notes = generate_notes(transcript, request.video_type, metadata, video_id)
         logger.info("✅ Notes generated successfully!")
         
         return JSONResponse(content={"notes": notes, "metadata": metadata})
