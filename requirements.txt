@@ -1,13 +1,14 @@
 fastapi
 uvicorn
 youtube-transcript-api
-google-generativeai
+google-generativeai>=0.8.0
 yt-dlp
-weasyprint
 jinja2
 python-multipart
 requests
 beautifulsoup4
 pydantic-settings
-ffmpeg-python
 gunicorn
+supabase>=2.0.0
+python-dotenv
+importlib-metadata>=6.0.0

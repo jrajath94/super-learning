@@ -1,26 +1,42 @@
-from fastapi import FastAPI, Request, Form, HTTPException, Response
-from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+"""
+Super-Learning API - Main Application Entry Point
+Version 2.0 with Agentic AI Architecture
+"""
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
-from app.services.youtube import get_video_id, get_transcript, get_video_metadata
-from app.services.llm import generate_notes
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
 import time
-from app.core.logger import configure_logging
-from app.core.log_streamer import log_streamer
-import asyncio
 
-# Configure Logging
+from app.core.config import get_settings
+from app.core.logger import configure_logging
+from app.api.v1 import api_router
+
+# Initialize settings and logging
+settings = get_settings()
 configure_logging()
 logger = logging.getLogger(__name__)
 
-# Add log streamer to root logger
-logging.getLogger().addHandler(log_streamer)
+# Create FastAPI app
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.app_version,
+    description="AI-Powered Learning Platform with Agentic Architecture"
+)
 
-app = FastAPI()
+# CORS middleware for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+# Request logging middleware
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -29,70 +45,81 @@ async def log_requests(request: Request, call_next):
     logger.info(f"🔄 {request.method} {request.url.path} completed in {duration:.2f}s | Status: {response.status_code}")
     return response
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="/Users/rj/youtube_notes/app/static"), name="static")
+# Mount API v1 routes
+app.include_router(api_router, prefix=settings.api_v1_prefix)
 
-# Templates
-templates = Jinja2Templates(directory="/Users/rj/youtube_notes/app/templates")
+# Static files directory
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
-class VideoRequest(BaseModel):
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+if os.path.exists(TEMPLATES_DIR):
+    templates = Jinja2Templates(directory=TEMPLATES_DIR)
+
+# Legacy routes for backward compatibility
+from app.services.youtube import get_video_id, get_transcript, get_video_metadata
+from app.services.llm import generate_notes
+from pydantic import BaseModel
+from fastapi.responses import JSONResponse
+from fastapi import HTTPException
+
+
+class LegacyVideoRequest(BaseModel):
     url: str
     video_type: str
 
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    """Serve the main HTML page."""
+    if os.path.exists(TEMPLATES_DIR):
+        return templates.TemplateResponse("index.html", {"request": request})
+    return HTMLResponse("<h1>Super-Learning API</h1><p>Frontend not configured. Use /api/v1/docs for API documentation.</p>")
 
-@app.get("/logs/stream")
-async def stream_logs():
-    """Server-Sent Events endpoint for streaming logs"""
-    
-    async def event_generator():
-        q = log_streamer.add_client()
-        try:
-            while True:
-                # Wait for new log message
-                try:
-                    msg = q.get(timeout=1)
-                    yield f"data: {msg}\n\n"
-                except:
-                    # Send heartbeat to keep connection alive
-                    yield f": heartbeat\n\n"
-                await asyncio.sleep(0.1)
-        finally:
-            log_streamer.remove_client(q)
-    
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-        }
-    )
 
 @app.post("/generate")
-async def generate(request: VideoRequest):
-    logger.info(f"🚀 Received generation request for URL: {request.url} | Type: {request.video_type}")
+async def legacy_generate(request: LegacyVideoRequest):
+    """
+    Legacy endpoint for backward compatibility.
+    Use /api/v1/notes/generate for new integrations.
+    """
+    logger.info(f"🚀 [Legacy] Received generation request for URL: {request.url} | Type: {request.video_type}")
     
     try:
-        logger.info("1️⃣  Extracting Video ID...")
         video_id = get_video_id(request.url)
-        logger.info(f"✅ Video ID extracted: {video_id}")
-
-        logger.info("2️⃣  Fetching Transcript...")
         transcript = get_transcript(video_id)
-        logger.info(f"✅ Transcript fetched. Length: {len(transcript)} characters")
-
-        logger.info("3️⃣  Fetching Metadata...")
         metadata = get_video_metadata(request.url)
-        logger.info(f"✅ Metadata fetched: {metadata.get('title', 'Unknown')}")
-        
-        logger.info("4️⃣  Sending to Gemini for Note Generation (This may take time)...")
         notes = generate_notes(transcript, request.video_type, metadata, video_id)
-        logger.info("✅ Notes generated successfully!")
         
         return JSONResponse(content={"notes": notes, "metadata": metadata})
     except Exception as e:
         logger.error(f"❌ Error generating notes: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy", "version": settings.app_version}
+
+
+@app.get("/api/v1/docs", include_in_schema=False)
+async def api_docs_redirect():
+    """Redirect to API documentation."""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/docs")
+
+
+# Startup event
+@app.on_event("startup")
+async def startup_event():
+    logger.info(f"🚀 {settings.app_name} v{settings.app_version} starting...")
+    logger.info(f"📡 API available at {settings.api_v1_prefix}")
+
+
+# Shutdown event
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info(f"👋 {settings.app_name} shutting down...")

@@ -2,14 +2,15 @@ import google.generativeai as genai
 import os
 import logging
 import time
+import math
 from app.core.logger import archive_interaction
-from .prompts import STANFORD_PROMPT, DSA_PROMPT, PODCAST_PROMPT, CHEATSHEET_PROMPT
+from .prompts import STANFORD_PROMPT, DSA_PROMPT, PODCAST_PROMPT, CHEATSHEET_PROMPT, DETAILED_CHUNK_PROMPT, DSA_CHUNK_PROMPT, PODCAST_CHUNK_PROMPT
 from google.api_core import exceptions as google_exceptions
 
 logger = logging.getLogger(__name__)
 
 # Configure API Key
-GENAI_API_KEY = "AIzaSyBHjwwkKTwseGPiLL5pj4YRbIa6ITK19MU"
+GENAI_API_KEY = os.getenv("GENAI_API_KEY", "AIzaSyBHjwwkKTwseGPiLL5pj4YRbIa6ITK19MU")
 genai.configure(api_key=GENAI_API_KEY)
 
 # Model Configuration - Optimized for long-form, detailed content
@@ -38,7 +39,10 @@ def retry_with_backoff(model, prompt, video_id, max_retries=3):
                     response_chunks.append(chunk.text)
             
             full_response = "".join(response_chunks)
-            archive_interaction(video_id, prompt, full_response)
+            # Only archive if it's a full request, not chunks (chunks archived in main loop)
+            if "CHUNKED_PROCESSING" not in video_id:
+                 archive_interaction(video_id, prompt, full_response)
+            
             logger.info(f"Retry successful on attempt {attempt + 1}")
             return full_response
             
@@ -49,15 +53,72 @@ def retry_with_backoff(model, prompt, video_id, max_retries=3):
     
     return "Error: Max retries exceeded"
 
+def chunk_transcript(transcript: str, chunk_size: int = 25000) -> list[str]:
+    """Splits transcript into chunks of approximately chunk_size characters."""
+    return [transcript[i:i+chunk_size] for i in range(0, len(transcript), chunk_size)]
+
 def generate_notes(transcript_text: str, video_type: str, metadata: dict = None, video_id: str = "unknown") -> str:
     """
     Generates notes based on the video type and transcript using STREAMING.
+    Handles long videos by chunking if necessary.
     """
     logger.info(f"Initializing Gemini model: {MODEL_NAME}")
     model = genai.GenerativeModel(
         model_name=MODEL_NAME,
         generation_config=GENERATION_CONFIG,
     )
+
+    # Check if video is long (> 20 mins approx, or > 30k chars)
+    if len(transcript_text) > 30000:
+        logger.info(f"�� Long video detected ({len(transcript_text)} chars). Switching to CHUNKED processing.")
+        chunks = chunk_transcript(transcript_text)
+        full_notes = []
+        
+        logger.info(f"Processing {len(chunks)} chunks...")
+        
+        # Select the correct chunk prompt based on video type
+        if video_type == 'dsa':
+            base_chunk_prompt = DSA_CHUNK_PROMPT
+            logger.info("Using DSA_CHUNK_PROMPT for deep technical analysis")
+        elif video_type == 'podcast':
+            base_chunk_prompt = PODCAST_CHUNK_PROMPT
+            logger.info("Using PODCAST_CHUNK_PROMPT for wisdom extraction")
+        else:
+            base_chunk_prompt = DETAILED_CHUNK_PROMPT
+            logger.info("Using DETAILED_CHUNK_PROMPT for academic analysis")
+        
+        for i, chunk in enumerate(chunks):
+            logger.info(f"🔄 Processing chunk {i+1}/{len(chunks)}...")
+            
+            chunk_prompt = f"""
+{base_chunk_prompt}
+
+**Video Metadata:**
+Title: {metadata.get('title', 'Unknown')}
+Part: {i+1} of {len(chunks)}
+
+**Transcript Segment:**
+{chunk}
+"""
+            try:
+                # Use retry logic for each chunk
+                chunk_response = retry_with_backoff(model, chunk_prompt, f"{video_id}_part_{i+1}")
+                full_notes.append(chunk_response)
+                logger.info(f"✅ Chunk {i+1} completed.")
+            except Exception as e:
+                logger.error(f"❌ Failed to process chunk {i+1}: {e}")
+                full_notes.append(f"\n\n[Missing Section {i+1} due to error: {str(e)}]\n\n")
+        
+        # Combine all notes
+        combined_notes = "\n\n".join(full_notes)
+        
+        # Add a header
+        final_output = f"# Detailed Lecture Notes: {metadata.get('title', 'Unknown')}\n\n" + combined_notes
+        
+        # Archive the full interaction
+        archive_interaction(video_id, "CHUNKED_PROCESSING", final_output)
+        
+        return final_output
 
     logger.info(f"Selecting prompt for video type: {video_type}")
     if video_type == 'stanford':

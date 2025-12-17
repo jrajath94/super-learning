@@ -1,60 +1,88 @@
-# Super-Learning: AI-Powered YouTube Note Generator
+# 🧠 Super-Learning: Agentic AI YouTube Life OS
 
-Transform YouTube educational content into comprehensive, high-quality study notes using advanced AI prompting techniques. Built for students, professionals, and lifelong learners who want to maximize knowledge retention from video lectures.
+Transform YouTube's vast educational content into a structured, high-retention knowledge base. Super-Learning uses a multi-agent orchestrated system to generate, analyze, and coach you through any learning material.
 
-## Overview
+---
 
-Super-Learning is a FastAPI-based web application that generates detailed, pedagogically-optimized notes from YouTube videos. It uses Google's Gemini 2.5 Pro model with specialized prompts designed to encourage deep comprehension, critical thinking, and practical application.
+## 🚀 Vision
+Built for the " Jarvis-like" Life OS experience, Super-Learning doesn't just generate notes; it orchestrates agents to understand, quiz, and mentor you based on first principles and scientific learning methods.
 
-## Key Features
+## ✨ Key Features
 
-### Intelligent Note Generation
-- **Stanford AI Course Mode**: Scientist-level analysis with first principles derivations, mental models, and research insights
-- **DSA & Interview Prep**: Engineer-focused breakdowns with pattern recognition, system design considerations, and implementation templates  
-- **Podcast & Tech Talk Mode**: Strategic analysis extracting frameworks, wisdom, and actionable insights
-- **Cheat Sheet Mode**: High-density visual summaries optimized for quick recall
+### 1. Multi-Agent Orchestration
+Powered by a sophisticated **Agent Orchestrator**, the system routes your requests to specialized AI personas:
+*   **Learning Agent**: Crafts deep-comprehension notes using pedagogical frameworks (Stanford AI, DSA, Podcasts).
+*   **Study Assistant**: Your personal tutor. Ask questions about your notes, request simplifications, or get quizzed.
+*   **Learning Coach**: Analyzes your habits and content library to suggest optimization strategies and next topics.
 
-### Technical Capabilities
-- **Streaming API**: Handles long-form content without timeouts using chunk-based processing
-- **Comprehensive Logging**: Full request lifecycle tracking with archived prompts and responses for debugging
-- **Resilient Error Handling**: Automatic retry with exponential backoff for transient API failures
-- **Mobile-Optimized UI**: Responsive design with dark mode support
+### 2. Specialized Note Modes
+*   **🎓 Stanford AI Mode**: High-fidelity analysis focusing on mental models, first principles, and research-grade insights.
+*   **💻 DSA & Interview Prep**: Implementation-first approach with pattern recognition, complexity analysis, and coding templates.
+*   **🎙️ Podcast & Strategy**: Extracts frameworks, actionable wisdom, and strategic takeaways from long-form conversations.
+*   **📋 Quick-Recall Cheat Sheets**: Dense, high-utility summaries for rapid reviews.
 
-## Quick Start
+### 3. World-Class Infrastructure
+*   **Frontend**: Modern Next.js application with a premium "Glassmorphism" UI, smooth animations, and optimized mobile experience.
+*   **Backend**: High-performance FastAPI with streaming responses to handle long-form video processing (60min+).
+*   **Database**: Robust Supabase integration for persistent storage of notes, analytics, and agent memory.
+*   **Testing**: Comprehensive suite with 60+ Playwright E2E tests and Locust load testing for production-grade reliability.
 
-\`\`\`bash
-# Clone the repository  
-git clone https://github.com/jrajath94/super-learning.git
-cd super-learning
+---
 
-# Install dependencies
-pip install -r requirements.txt
+## 🛠️ Tech Stack
+*   **Core**: Next.js, React, TypeScript, Tailwind CSS
+*   **API**: FastAPI, Python 3.9+, Uvicorn
+*   **AI**: Google Gemini 2.5 Pro (via Google Generative AI Python SDK)
+*   **Storage**: Supabase (PostgreSQL + Auth)
+*   **Testing**: Playwright (E2E), Locust (Load Testing), Pytest (Backend)
 
-# Set API key
-export GENAI_API_KEY='your_gemini_api_key'
+## 🚦 Getting Started
 
-# Run locally
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-\`\`\`
+### Prerequisites
+*   Node.js 18+
+*   Python 3.9+
+*   Google Gemini API Key
+*   Supabase Project (URL & Anon Key)
 
-Access at \`http://localhost:8000\`
+### Installation
 
-## Technology Stack
+1.  **Clone & Environment**:
+    ```bash
+    git clone https://github.com/jrajath94/super-learning.git
+    cd super-learning
+    cp .env.example .env
+    ```
 
-- **Backend**: FastAPI, Python 3.9+
-- **AI Model**: Google Gemini 2.5 Pro
-- **Data Sources**: youtube-transcript-api, yt-dlp
-- **Frontend**: Vanilla JavaScript with Marked.js
+2.  **Backend Setup**:
+    ```bash
+    pip install -r requirements.txt
+    uvicorn app.main:app --reload
+    ```
 
-## Deployment
+3.  **Frontend Setup**:
+    ```bash
+    cd web
+    npm install
+    npm run dev
+    ```
 
-Supports free deployment on:
-- Render (recommended for beginners)  
-- Google Cloud Run
-- Fly.io
+---
 
-See deployment instructions in the documentation.
+## 🧪 Quality Assurance
+We maintain a >90% test coverage and perform rigorous verification:
+```bash
+# Run E2E Tests
+cd web
+npx playwright test
 
-## License
+# Run Load Tests
+python3 -m locust -f locustfile.py --headless
+```
 
+---
+
+## 👤 Author
+**J Rajath** (jrajath94)
+
+## 📄 License
 MIT License
