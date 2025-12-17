@@ -108,13 +108,14 @@ class NotesRepository:
         result = self.db.table(self.table).delete().eq("id", str(note_id)).execute()
         return len(result.data) > 0 if result.data else False
     
-    async def search_by_tags(self, user_id: UUID, tags: list[str]) -> list[dict]:
-        """Search notes by tags."""
+    async def search_by_content(self, user_id: UUID, query: str, limit: int = 5) -> list[dict]:
+        """Search notes by content using keyword matching."""
         result = (
             self.db.table(self.table)
             .select("*, content_sources(title, source_type)")
             .eq("user_id", str(user_id))
-            .contains("tags", tags)
+            .ilike("content", f"%{query}%")
+            .limit(limit)
             .execute()
         )
         return result.data or []

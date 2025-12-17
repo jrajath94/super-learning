@@ -56,10 +56,19 @@ class AgentOrchestrator:
         if not agent_type:
             agent_type = await self._route_message(message)
         
-        # Get context from notes if provided
+        # Get context from notes
         context = ""
         if context_note_id:
             context = await self._get_note_context(context_note_id)
+        elif agent_type == "study":
+            # Simple RAG: Search for relevant context
+            from app.db.repositories.notes import NotesRepository
+            repo = NotesRepository(self.db)
+            relevant_notes = await repo.search_by_content(self.user_id, message)
+            if relevant_notes:
+                context = "\n\n".join([n.get("content", "") for n in relevant_notes])
+                # Truncate total context
+                context = context[:8000] if len(context) > 8000 else context
         
         # Get agent-specific prompt
         system_prompt = self._get_agent_prompt(agent_type)

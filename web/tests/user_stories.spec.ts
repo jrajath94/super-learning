@@ -63,10 +63,28 @@ test.describe('Super-Learning User Stories (End-to-End)', () => {
         await expect(page.locator('text=Total Notes')).toBeVisible();
         await expect(page.locator('text=Transformer Architecture')).toBeDefined(); // Mock or real
 
-        // 3. Study Agent uses that content (Simulated by asking about it)
+        // 3. Study Agent uses that content
         await page.goto('/study');
         await page.fill('input[placeholder*="Ask a question"]', 'Summarize my DSA notes.');
         await page.keyboard.press('Enter');
         await expect(page.locator('text=Thinking...')).toBeVisible();
+    });
+
+    test('Story: The Scholar (Cross-Note RAG & Search)', async ({ page }) => {
+        // 1. Visit Study Page
+        await page.goto('/study');
+
+        // 2. Ask a question that requires searching multiple notes
+        const chatInput = page.locator('input[placeholder*="Ask a question"]');
+        await chatInput.fill('Search my history for everything related to "Complexity Analysis".');
+        await page.keyboard.press('Enter');
+
+        // 3. Verify thinking state
+        await expect(page.locator('text=Thinking...')).toBeVisible();
+
+        // 4. Verify the response
+        await expect(page.locator('.prose')).toBeVisible({ timeout: 15000 });
+        const responseText = await page.locator('.prose').textContent();
+        expect(responseText?.toLowerCase()).toContain('assistant');
     });
 });
