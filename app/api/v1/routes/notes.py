@@ -48,6 +48,7 @@ DEV_USER_ID = "00000000-0000-0000-0000-000000000001"
 @router.post("/generate", response_model=NoteResponse)
 async def generate_note(
     request: NoteGenerateRequest,
+    background_tasks: BackgroundTasks,
     db: Client = Depends(get_db)
 ):
     """
@@ -120,6 +121,9 @@ async def generate_note(
     
     if not note:
         raise HTTPException(status_code=500, detail="Failed to save notes")
+        
+    # Trigger background embedding generation
+    background_tasks.add_task(generate_and_save_embedding, notes_repo, UUID(note["id"]), notes_content)
     
     return NoteResponse(
         **note,
@@ -129,6 +133,16 @@ async def generate_note(
             "thumbnail_url": content.get("thumbnail_url")
         }
     )
+
+async def generate_and_save_embedding(repo: NotesRepository, note_id: UUID, content: str):
+    """Generate embedding for note and save to DB."""
+    try:
+        from app.services.embeddings import generate_embedding
+        embedding = generate_embedding(content)
+        if embedding:
+            await repo.update_embedding(note_id, embedding)
+    except Exception as e:
+        print(f"Error generating embedding for note {note_id}: {e}")
 
 
 @router.get("/", response_model=list[NoteResponse])

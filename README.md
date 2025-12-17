@@ -66,6 +66,45 @@ Powered by a sophisticated **Agent Orchestrator**, the system routes your reques
     npm run dev
     ```
 
+### 🧠 Semantic Search Setup (Optional)
+To enable true AI-powered vector search (RAG), run this SQL in your Supabase Editor:
+
+```sql
+-- Enable Vector Extension
+create extension if not exists vector;
+
+-- Add embedding column to notes
+alter table notes add column embedding vector(768);
+
+-- Create Similarity Search Function
+create or replace function match_notes(
+  query_embedding vector(768),
+  match_threshold float,
+  match_count int,
+  p_user_id text
+)
+returns table (
+  id uuid,
+  content text,
+  similarity float
+)
+language plpgsql
+as $$
+begin
+  return query
+  select
+    notes.id,
+    notes.content,
+    1 - (notes.embedding <=> query_embedding) as similarity
+  from notes
+  where 1 - (notes.embedding <=> query_embedding) > match_threshold
+  and notes.user_id::text = p_user_id
+  order by notes.embedding <=> query_embedding
+  limit match_count;
+end;
+$$;
+```
+
 ---
 
 ## 🧪 Quality Assurance

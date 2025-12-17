@@ -109,7 +109,22 @@ class NotesRepository:
         return len(result.data) > 0 if result.data else False
     
     async def search_by_content(self, user_id: UUID, query: str, limit: int = 5) -> list[dict]:
-        """Search notes by content using keyword matching."""
+        """
+        Search notes by content.
+        Uses vector search if available, falls back to keyword matching.
+        """
+        try:
+            # Try semantic search first
+            from app.services.embeddings import generate_query_embedding
+            query_embedding = generate_query_embedding(query)
+            
+            if query_embedding:
+                return await self.search_by_embedding(user_id, query_embedding, limit)
+        except Exception as e:
+            # Fallback for mock/local environment
+            pass
+            
+        # Fallback to keyword search
         result = (
             self.db.table(self.table)
             .select("*, content_sources(title, source_type)")
@@ -119,3 +134,24 @@ class NotesRepository:
             .execute()
         )
         return result.data or []
+    
+    async def search_by_embedding(self, user_id: UUID, embedding: list[float], limit: int = 5) -> list[dict]:
+        """Search notes using vector similarity."""
+        params = {
+            "match_threshold": 0.7,
+            "match_count": limit,
+            "query_embedding": embedding,
+            "p_user_id": str(user_id)
+        }
+        result = self.db.rpc("match_notes", params).execute()
+        return result.data or []
+    
+    async def update_embedding(self, note_id: UUID, embedding: list[float]) -> bool:
+        """Update note embedding."""
+        result = (
+            self.db.table(self.table)
+            .update({"embedding": embedding})
+            .eq("id", str(note_id))
+            .execute()
+        )
+        return len(result.data) > 0 if result.data else False
