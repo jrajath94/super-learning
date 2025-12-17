@@ -254,7 +254,9 @@ Only output the JSON array, no other text.
         message_lower = message.lower()
         
         # Simple keyword-based routing
-        if any(word in message_lower for word in ["quiz", "test", "practice", "explain", "what is", "how does"]):
+        if any(word in message_lower for word in ["interview", "mock", "behavioral", "faang", "technical check"]):
+            return "interviewer"
+        elif any(word in message_lower for word in ["quiz", "test", "practice", "explain", "what is", "how does"]):
             return "study"
         elif any(word in message_lower for word in ["progress", "suggest", "recommend", "improve", "pattern"]):
             return "coach"
@@ -294,6 +296,17 @@ Your capabilities:
 
 Be concise, helpful, and engaging. Use examples when helpful.
 """,
+            "interviewer": """
+You are an Expert Technical Interviewer AI. Your goal is to conduct a rigorous mock interview based on the user's notes.
+
+Your Mode of Operation:
+1. Ask ONE challenging conceptual or implementation question at a time.
+2. Wait for the user's response.
+3. Critique their answer with extreme precision (pointing out edge cases, time complexity flaws, or missing depth).
+4. Score their answer (0-10) and then ask the next question.
+
+Tone: Professional, demanding, yet constructive. Like a Senior Staff Engineer at FAANG.
+""",
             "coach": """
 You are a Learning Coach AI - a mentor focused on helping users optimize their learning journey.
 
@@ -305,6 +318,8 @@ Your capabilities:
 
 Be encouraging but direct. Focus on actionable advice.
 """,
+        }
+        return prompts.get(agent_type, prompts["study"])
             "learning": """
 You are a Learning Agent AI - specialized in deep comprehension note generation.
 

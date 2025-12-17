@@ -68,6 +68,7 @@ test.describe('Super-Learning User Stories (End-to-End)', () => {
         await page.fill('input[placeholder*="Ask a question"]', 'Summarize my DSA notes.');
         await page.keyboard.press('Enter');
         await expect(page.locator('text=Thinking...')).toBeVisible();
+        await expect(page.locator('text=demo AI Study Assistant')).toBeVisible({ timeout: 15000 });
     });
 
     test('Story: The Scholar (Cross-Note RAG & Search)', async ({ page }) => {
@@ -79,12 +80,11 @@ test.describe('Super-Learning User Stories (End-to-End)', () => {
         await chatInput.fill('Search my history for everything related to "Complexity Analysis".');
         await page.keyboard.press('Enter');
 
-        // 3. Verify thinking state
+        // 3. Verify thinking state and response
         await expect(page.locator('text=Thinking...')).toBeVisible();
 
-        // 4. Verify the response
-        await expect(page.locator('.prose')).toBeVisible({ timeout: 15000 });
-        const responseText = await page.locator('.prose').textContent();
-        expect(responseText?.toLowerCase()).toContain('assistant');
+        // 4. Wait for mock response (Assistant persona)
+        const assistantResponse = page.locator('text=demo AI Study Assistant');
+        await expect(assistantResponse).toBeVisible({ timeout: 15000 });
     });
 });

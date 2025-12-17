@@ -44,7 +44,7 @@ DEV_USER_ID = "00000000-0000-0000-0000-000000000001"
 async def get_agent_status():
     """Get status of available agents."""
     return AgentStatusResponse(
-        available_agents=["learning", "study", "coach"],
+        available_agents=["learning", "study", "coach", "interviewer"],
         active_sessions=0  # Will track actual sessions later
     )
 
