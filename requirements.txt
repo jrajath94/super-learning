@@ -12,3 +12,5 @@ gunicorn
 supabase>=2.0.0
 python-dotenv
 importlib-metadata>=6.0.0
+pypdf
+pymupdf
