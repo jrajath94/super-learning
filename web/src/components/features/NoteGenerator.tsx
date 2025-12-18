@@ -129,9 +129,14 @@ export function NoteGenerator({
                                 </div>
                             ))}
                             {isGenerating && (
-                                <div className="flex items-center gap-2 text-accent">
-                                    <span className="animate-pulse">⏳</span>
-                                    <span>Processing... This may take a minute for long videos</span>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-accent">
+                                        <span className="animate-pulse">⏳</span>
+                                        <span>Processing... This may take a minute for long videos</span>
+                                    </div>
+                                    <div className="text-xs text-foreground-muted italic border-l-2 border-accent/30 pl-2">
+                                        💡 Applying Neuro-Symbolic Chains & Visual Anchors...
+                                    </div>
                                 </div>
                             )}
                         </div>
