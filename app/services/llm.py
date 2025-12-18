@@ -14,8 +14,10 @@ from google.api_core import exceptions as google_exceptions
 
 logger = logging.getLogger(__name__)
 
-# Configure API Key
-GENAI_API_KEY = os.getenv("GENAI_API_KEY", "AIzaSyBHjwwkKTwseGPiLL5pj4YRbIa6ITK19MU")
+# Configure API Key (MUST be in .env, never hardcoded)
+GENAI_API_KEY = os.getenv("GENAI_API_KEY")
+if not GENAI_API_KEY:
+    raise EnvironmentError("GENAI_API_KEY is not set. Please configure it in your .env file.")
 genai.configure(api_key=GENAI_API_KEY)
 
 # Model Configuration - Optimized for long-form, detailed content

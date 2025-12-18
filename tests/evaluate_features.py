@@ -6,6 +6,11 @@ import sys
 import os
 import asyncio
 import logging
+
+# Load .env BEFORE importing app modules
+from dotenv import load_dotenv
+load_dotenv()
+
 from app.services.llm import generate_notes, chunk_transcript
 
 # Setup Logging
