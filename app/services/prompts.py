@@ -184,15 +184,30 @@ CHEATSHEET_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
 """)
 
 # -----------------------------------------------------------------------------
-# 4. RESEARCH PAPER MODE (Ilya Sutskever Style)
+# 4. RESEARCH PAPER MODE (Ilya Sutskever Style) - ENHANCED
 # -----------------------------------------------------------------------------
 RESEARCH_PAPER_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
     **CONTEXT**: SOTA AI Research Paper (reading list: Attention is All You Need, ResNet, etc.).
     **GOAL**: Replicate Ilya Sutskever's deep understanding. Not just *what* they did, but *why* it worked and *what it implies*.
+    
+    **CRITICAL INSTRUCTION - Prerequisite Knowledge**:
+    If this paper builds on prior concepts (e.g., RNNs, CNNs, Backpropagation), you MUST first explain those concepts in detail BEFORE diving into the paper's innovations. The reader may not know these foundations. Explain:
+    - What the prior technique was
+    - How it worked (with equations if relevant)
+    - What its limitations were (e.g., vanishing gradients)
+    - WHY these limitations existed (the math/intuition behind them)
 
-    **OUTPUT FORMAT**:
+    **OUTPUT FORMAT (STRICT - Follow Exactly)**:
 
     # 📜 [Paper Title]: The Research Breakdown
+
+    ## 🧱 Prerequisite Knowledge (Don't Skip This!)
+    *Explain the foundational concepts needed to understand this paper.*
+    *   **[Prior Technique Name]**: What is it? How does it work?
+    *   **The Core Problem with It**: (e.g., "Vanishing gradients occur because...")
+    *   **Why This Matters**: Connect to the paper's motivation.
+    
+    [IMAGE_PROMPT: Generate a diagram showing [Prior Technique] architecture with labeled components]
 
     ## 🍌 The Novelty Anatomy (Novelty Anchor)
     *   **The Status Quo**: What was the SOTA before this?
@@ -201,14 +216,14 @@ RESEARCH_PAPER_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
 
     ## 🔬 Algorithmic Deep Dive
     *   **Architecture**:
-        [SCENE: Describe the architecture diagram vividly. Data flowing through blocks.]
+        [IMAGE_PROMPT: Generate a clean diagram of the [Paper's Architecture] showing data flow]
     *   **The Math (Decoded)**:
         *   Take the scariest equation in the paper.
         *   Break it down variable by variable.
         *   Give it a physical intuition. "This term forces the model to..."
 
     ## 🧪 Experiments & "The Trick"
-    *   **Crucial Detail**: What specific hyperparameter or training trick made this work? (e.g., "Warmup steps", "Batch norm placement").
+    *   **Crucial Detail**: What specific hyperparameter or training trick made this work?
     *   **The "Ilya" Critique**:
         *   **Strengths**: Why is this genius?
         *   **Weaknesses**: What is hacky? Where does it fail?
@@ -217,8 +232,20 @@ RESEARCH_PAPER_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
     *   **Ancestor Of**: What papers did this spawn? (e.g., Transformer -> BERT -> GPT-4).
     *   **Pattern Match**: "This is just [Old Concept] applied to [New Domain]."
     
-    ## 📝 Implementation Notes
+    ## 📝 Interview Quick-Fire
+    *   **Q**: [Likely Interview Question] -> **A**: [Concise Answer]
+    *   (Include 3-5 questions)
+
+    ## 🔗 Implementation Notes
     *   **If you build this**: Watch out for...
+    
+    ---
+    **FORMATTING REQUIREMENTS**:
+    - Use 🍌 emoji for novelty sections
+    - Use [IMAGE_PROMPT: ...] tags where visual aids would help
+    - Keep paragraphs under 5 lines (ADHD-friendly)
+    - Use tables for comparisons
+    - Use code blocks for equations and pseudocode
 """)
 
 # -----------------------------------------------------------------------------

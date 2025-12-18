@@ -62,10 +62,31 @@ export function NotesPreview({ notes, metadata }: NotesPreviewProps) {
                 </div>
             </div>
 
-            {/* Notes Content */}
-            <div className="glass rounded-2xl p-6 md:p-8">
+            {/* Notes Content - Premium Rendering */}
+            <div className="glass rounded-2xl p-6 md:p-10 overflow-hidden">
                 <article
-                    className="prose max-w-none"
+                    className="
+                        prose prose-invert 
+                        prose-lg 
+                        max-w-none
+                        prose-headings:font-bold prose-headings:text-white
+                        prose-h1:text-3xl prose-h1:border-b prose-h1:border-border prose-h1:pb-4 prose-h1:mb-6
+                        prose-h2:text-2xl prose-h2:text-accent prose-h2:mt-10
+                        prose-h3:text-xl prose-h3:text-foreground
+                        prose-p:text-foreground-secondary prose-p:leading-relaxed
+                        prose-strong:text-white prose-strong:font-semibold
+                        prose-code:bg-background-tertiary prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-accent prose-code:font-mono prose-code:text-sm
+                        prose-pre:bg-background-tertiary prose-pre:border prose-pre:border-border prose-pre:rounded-xl prose-pre:p-4 prose-pre:overflow-x-auto
+                        prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-accent/10 prose-blockquote:px-4 prose-blockquote:py-2 prose-blockquote:rounded-r-xl prose-blockquote:italic
+                        prose-ul:text-foreground-secondary
+                        prose-li:marker:text-accent
+                        prose-table:border-collapse prose-table:w-full
+                        prose-th:bg-background-tertiary prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:border-b prose-th:border-border
+                        prose-td:px-4 prose-td:py-2 prose-td:border-b prose-td:border-border/50
+                        prose-img:rounded-xl prose-img:shadow-2xl prose-img:border prose-img:border-border prose-img:my-8
+                        prose-hr:border-border prose-hr:my-8
+                        prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+                    "
                     dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
             </div>
