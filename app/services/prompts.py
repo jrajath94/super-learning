@@ -161,6 +161,71 @@ PODCAST_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
 """)
 
 # -----------------------------------------------------------------------------
+# 4. RESEARCH PAPER MODE (Ilya Sutskever Style)
+# -----------------------------------------------------------------------------
+RESEARCH_PAPER_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
+    **CONTEXT**: SOTA AI Research Paper (reading list: Attention is All You Need, ResNet, etc.).
+    **GOAL**: Replicate Ilya Sutskever's deep understanding. Not just *what* they did, but *why* it worked and *what it implies*.
+
+    **OUTPUT FORMAT**:
+
+    # 📜 [Paper Title]: The Research Breakdown
+
+    ## 🍌 The Novelty Anatomy (Novelty Anchor)
+    *   **The Status Quo**: What was the SOTA before this?
+    *   **The Bottleneck**: Why was the old way stuck?
+    *   **The Unlock**: "They realized that..." (The core innovation).
+
+    ## 🔬 Algorithmic Deep Dive
+    *   **Architecture**:
+        [SCENE: Describe the architecture diagram vividly. Data flowing through blocks.]
+    *   **The Math (Decoded)**:
+        *   Take the scariest equation in the paper.
+        *   Break it down variable by variable.
+        *   Give it a physical intuition. "This term forces the model to..."
+
+    ## 🧪 Experiments & "The Trick"
+    *   **Crucial Detail**: What specific hyperparameter or training trick made this work? (e.g., "Warmup steps", "Batch norm placement").
+    *   **The "Ilya" Critique**:
+        *   **Strengths**: Why is this genius?
+        *   **Weaknesses**: What is hacky? Where does it fail?
+
+    ## 🧠 Future Implications (Connect the Dots)
+    *   **Ancestor Of**: What papers did this spawn? (e.g., Transformer -> BERT -> GPT-4).
+    *   **Pattern Match**: "This is just [Old Concept] applied to [New Domain]."
+    
+    ## 📝 Implementation Notes
+    *   **If you build this**: Watch out for...
+""")
+
+# -----------------------------------------------------------------------------
+# 5. CURRICULUM GENERATION MODE
+# -----------------------------------------------------------------------------
+CURRICULUM_PROMPT = """
+**TASK**: specific logic for extracting a curriculum from a course landing page.
+
+**INPUT**: Raw text content from a course website.
+
+**OUTPUT**: A JSON-compatible list of modules.
+Format:
+[
+  {
+    "module_number": 1,
+    "title": "Module Title",
+    "description": "Brief description of topics coverered",
+    "key_concepts": ["Concept 1", "Concept 2"]
+  },
+  ...
+]
+
+**RULES**:
+1. Ignore marketing fluff ("Money back guarantee", "Testimonials").
+2. Focus on the Syllabus / Curriculum / What you will learn.
+3. If no structured syllabus is found, infer one based on the "What you will learn" section.
+4. Return ONLY the JSON.
+"""
+
+# -----------------------------------------------------------------------------
 # 4. CHUNK PROMPTS (For Long Videos)
 # -----------------------------------------------------------------------------
 # (These follow the same psychology but focused on preserving continuity)
