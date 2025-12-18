@@ -161,6 +161,29 @@ PODCAST_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
 """)
 
 # -----------------------------------------------------------------------------
+# 3.5. CHEATSHEET MODE (The Crammer)
+# -----------------------------------------------------------------------------
+CHEATSHEET_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
+    **CONTEXT**: Exam Prep / Last Minute Review.
+    **GOAL**: Maximum Density. High Signal/Noise Ratio.
+
+    **OUTPUT FORMAT**:
+    
+    # 📝 [Title]: One-Page Cheat Sheet
+
+    ## 🔑 Key Definitions
+    *   **Term**: Definition (Visual Hook).
+    
+    ## 📜 Core Formulas / Rules
+    *   Rule 1: ...
+    *   Formula 2: ...
+
+    ## ⚠️ Common Pitfalls (Don't do this)
+    *   Trap 1: ...
+    *   Trap 2: ...
+""")
+
+# -----------------------------------------------------------------------------
 # 4. RESEARCH PAPER MODE (Ilya Sutskever Style)
 # -----------------------------------------------------------------------------
 RESEARCH_PAPER_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
@@ -237,4 +260,23 @@ DETAILED_CHUNK_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
     1.  **Verbatim Concepts**: Capture specific definitions.
     2.  **Logic Chain**: If A -> B -> C, capture the full chain.
     3.  **Visual Tags**: If the speaker points to a diagram, describe it: `[VISUAL: Description]`.
+""")
+
+DSA_CHUNK_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
+    **TASK**: Transcribe/Transform this SEGMENT of a Coding Interview.
+    **MODE**: Pattern Extraction.
+    
+    **INSTRUCTIONS**:
+    1.  **Code**: Capture any code snippets verbatim.
+    2.  **Logic**: Track the evolution of the algorithm (Brute force -> Optimized).
+    3.  **Continuity**: Ensure variable names remain consistent.
+""")
+
+PODCAST_CHUNK_PROMPT = NEURAL_ARCHITECT_SYSTEM + textwrap.dedent("""
+    **TASK**: Transcribe/Transform this SEGMENT of a Conversation.
+    **MODE**: Insight Extraction.
+    
+    **INSTRUCTIONS**:
+    1.  **Dialogue**: Who is speaking? Preserve the back-and-forth flow.
+    2.  **Stories**: Don't summarize anecdotes too heavily; keep the emotional "punch".
 """)

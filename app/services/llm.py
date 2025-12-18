@@ -10,22 +10,6 @@ from .prompts import (
     RESEARCH_PAPER_PROMPT, CURRICULUM_PROMPT
 )
 
-# ... (omitted lines)
-
-    logger.info(f"Selecting prompt for video type: {video_type}")
-    if video_type == 'stanford':
-        system_prompt = STANFORD_PROMPT
-    elif video_type == 'dsa':
-        system_prompt = DSA_PROMPT
-    elif video_type == 'podcast':
-        system_prompt = PODCAST_PROMPT
-    elif video_type == 'cheatsheet':
-        system_prompt = CHEATSHEET_PROMPT
-    elif video_type == 'research_paper':
-        system_prompt = RESEARCH_PAPER_PROMPT
-        logger.info("Using RESEARCH_PAPER_PROMPT for deep analysis")
-    else:
-        system_prompt = STANFORD_PROMPT
 from google.api_core import exceptions as google_exceptions
 
 logger = logging.getLogger(__name__)
