@@ -53,14 +53,23 @@ def retry_with_backoff(model, prompt, video_id, max_retries=3):
     
     return "Error: Max retries exceeded"
 
-def chunk_transcript(transcript: str, chunk_size: int = 25000) -> list[str]:
-    """Splits transcript into chunks of approximately chunk_size characters."""
-    return [transcript[i:i+chunk_size] for i in range(0, len(transcript), chunk_size)]
+def chunk_transcript(transcript: str, chunk_size: int = 25000, overlap: int = 1000) -> list[str]:
+    """
+    Splits transcript into chunks with significant overlap to preserve context.
+    """
+    chunks = []
+    start = 0
+    while start < len(transcript):
+        end = start + chunk_size
+        chunks.append(transcript[start:end])
+        # Move forward by chunk_size minus overlap
+        start += (chunk_size - overlap)
+    return chunks
 
 def generate_notes(transcript_text: str, video_type: str, metadata: dict = None, video_id: str = "unknown") -> str:
     """
     Generates notes based on the video type and transcript using STREAMING.
-    Handles long videos by chunking if necessary.
+    Handles long videos by chunking with intelligent context handover.
     """
     logger.info(f"Initializing Gemini model: {MODEL_NAME}")
     model = genai.GenerativeModel(
@@ -70,22 +79,22 @@ def generate_notes(transcript_text: str, video_type: str, metadata: dict = None,
 
     # Check if video is long (> 20 mins approx, or > 30k chars)
     if len(transcript_text) > 30000:
-        logger.info(f"�� Long video detected ({len(transcript_text)} chars). Switching to CHUNKED processing.")
+        logger.info(f"📜 Long video detected ({len(transcript_text)} chars). Switching to NEURAL CHUNKED processing.")
         chunks = chunk_transcript(transcript_text)
         full_notes = []
         
-        logger.info(f"Processing {len(chunks)} chunks...")
+        logger.info(f"Processing {len(chunks)} overlapping chunks...")
         
         # Select the correct chunk prompt based on video type
         if video_type == 'dsa':
             base_chunk_prompt = DSA_CHUNK_PROMPT
-            logger.info("Using DSA_CHUNK_PROMPT for deep technical analysis")
         elif video_type == 'podcast':
             base_chunk_prompt = PODCAST_CHUNK_PROMPT
-            logger.info("Using PODCAST_CHUNK_PROMPT for wisdom extraction")
         else:
             base_chunk_prompt = DETAILED_CHUNK_PROMPT
-            logger.info("Using DETAILED_CHUNK_PROMPT for academic analysis")
+        
+        # Context buffer to maintain continuity
+        previous_context_summary = ""
         
         for i, chunk in enumerate(chunks):
             logger.info(f"🔄 Processing chunk {i+1}/{len(chunks)}...")
@@ -93,24 +102,34 @@ def generate_notes(transcript_text: str, video_type: str, metadata: dict = None,
             chunk_prompt = f"""
 {base_chunk_prompt}
 
-**Video Metadata:**
-Title: {metadata.get('title', 'Unknown')}
-Part: {i+1} of {len(chunks)}
+**Process Context:**
+*   **Video Title**: {metadata.get('title', 'Unknown')}
+*   **Segment**: {i+1} of {len(chunks)}
+*   **Previous Context**: {previous_context_summary or "Start of video"}
 
-**Transcript Segment:**
+**Current Transcript Segment**:
 {chunk}
+
+**Instructions for Continuity**:
+1.  Connect intuitively with the "Previous Context".
+2.  Do NOT repeat introductions if this is not the first chunk.
+3.  End with a smooth transition to the next topic.
 """
             try:
                 # Use retry logic for each chunk
                 chunk_response = retry_with_backoff(model, chunk_prompt, f"{video_id}_part_{i+1}")
                 full_notes.append(chunk_response)
+                
+                # Update context for next chunk (Extract last 500 chars of intuition)
+                previous_context_summary = chunk_response[-500:] if len(chunk_response) > 500 else chunk_response
+                
                 logger.info(f"✅ Chunk {i+1} completed.")
             except Exception as e:
                 logger.error(f"❌ Failed to process chunk {i+1}: {e}")
                 full_notes.append(f"\n\n[Missing Section {i+1} due to error: {str(e)}]\n\n")
         
         # Combine all notes
-        combined_notes = "\n\n".join(full_notes)
+        combined_notes = "\n\n---\n\n".join(full_notes)
         
         # Add a header
         final_output = f"# Detailed Lecture Notes: {metadata.get('title', 'Unknown')}\n\n" + combined_notes
