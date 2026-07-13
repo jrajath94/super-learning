@@ -1,42 +1,47 @@
-# 🧠 Super-Learning: Agentic AI YouTube Life OS
+# Super-Learning: Agentic AI YouTube Learning System
 
-Transform YouTube's vast educational content into a structured, high-retention knowledge base. Super-Learning uses a multi-agent orchestrated system to generate, analyze, and coach you through any learning material.
+Transform YouTube's educational content into a structured knowledge base. Super-Learning uses a multi-agent system to generate, analyze, and guide you through learning material.
 
 ---
 
-## 🚀 Vision
-Built for the " Jarvis-like" Life OS experience, Super-Learning doesn't just generate notes; it orchestrates agents to understand, quiz, and mentor you based on first principles and scientific learning methods.
+## Vision
 
-## ✨ Key Features
+A learning platform built on agent orchestration. Super-Learning generates notes, quizzes, and mentorship based on first principles and scientific learning methods.
+
+## Key Features
 
 ### 1. Multi-Agent Orchestration
-Powered by a sophisticated **Agent Orchestrator**, the system routes your requests to specialized AI personas:
+
+A system that routes your requests to specialized AI personas:
 *   **Learning Agent**: Crafts deep-comprehension notes using pedagogical frameworks (Stanford AI, DSA, Podcasts).
 *   **Study Assistant**: Your personal tutor. Ask questions about your notes, request simplifications, or get quizzed.
 *   **Learning Coach**: Analyzes your habits and content library to suggest optimization strategies and next topics.
 
 ### 2. Specialized Note Modes
-*   **🎓 Stanford AI Mode**: High-fidelity analysis focusing on mental models, first principles, and research-grade insights.
-*   **💻 DSA & Interview Prep**: Implementation-first approach with pattern recognition, complexity analysis, and coding templates.
-*   **🎙️ Podcast & Strategy**: Extracts frameworks, actionable wisdom, and strategic takeaways from long-form conversations.
-*   **📋 Quick-Recall Cheat Sheets**: Dense, high-utility summaries for rapid reviews.
+
+*   **Stanford AI Mode**: Analysis focusing on mental models, first principles, and research insights.
+*   **DSA & Interview Prep**: Implementation-first approach with pattern recognition, complexity analysis, and coding templates.
+*   **Podcast & Strategy**: Extracts frameworks and takeaways from long-form conversations.
+*   **Quick-Recall Cheat Sheets**: Concise summaries for rapid review.
 
 ### 3. Infrastructure
-*   **Frontend**: Modern Next.js application with a "Glassmorphism" UI, smooth animations, and optimized mobile experience.
-*   **Backend**: High-performance FastAPI with streaming responses to handle long-form video processing (60min+).
+
+*   **Frontend**: Next.js application with responsive UI and mobile support.
+*   **Backend**: FastAPI with streaming responses for processing long-form video content (60+ minutes).
 *   **Database**: Supabase integration for persistent storage of notes, analytics, and agent memory.
 *   **Testing**: Locust load testing for reliability verification.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
+
 *   **Core**: Next.js, React, TypeScript, Tailwind CSS
 *   **API**: FastAPI, Python 3.9+, Uvicorn
 *   **AI**: Google Generative AI (Gemini)
 *   **Storage**: Supabase (PostgreSQL + Auth)
 *   **Testing**: Playwright (E2E), Locust (Load Testing)
 
-## 🚦 Getting Started
+## Getting Started
 
 ### Prerequisites
 *   Node.js 18+
@@ -66,8 +71,9 @@ Powered by a sophisticated **Agent Orchestrator**, the system routes your reques
     npm run dev
     ```
 
-### 🧠 Semantic Search Setup (Optional)
-To enable true AI-powered vector search (RAG), run this SQL in your Supabase Editor:
+### Semantic Search Setup (Optional)
+
+To enable vector search with embeddings, run this SQL in your Supabase Editor:
 
 ```sql
 -- Enable Vector Extension
@@ -107,8 +113,10 @@ $$;
 
 ---
 
-## 🧪 Quality Assurance
+## Quality Assurance
+
 Run E2E and load tests for reliability verification:
+
 ```bash
 # Run E2E Tests
 cd web
@@ -120,8 +128,10 @@ python3 -m locust -f locustfile.py --headless
 
 ---
 
-## 👤 Author
+## Author
+
 **J Rajath** (jrajath94)
 
-## 📄 License
+## License
+
 MIT License
