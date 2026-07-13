@@ -21,11 +21,11 @@ Powered by a sophisticated **Agent Orchestrator**, the system routes your reques
 *   **🎙️ Podcast & Strategy**: Extracts frameworks, actionable wisdom, and strategic takeaways from long-form conversations.
 *   **📋 Quick-Recall Cheat Sheets**: Dense, high-utility summaries for rapid reviews.
 
-### 3. World-Class Infrastructure
-*   **Frontend**: Modern Next.js application with a premium "Glassmorphism" UI, smooth animations, and optimized mobile experience.
+### 3. Infrastructure
+*   **Frontend**: Modern Next.js application with a "Glassmorphism" UI, smooth animations, and optimized mobile experience.
 *   **Backend**: High-performance FastAPI with streaming responses to handle long-form video processing (60min+).
-*   **Database**: Robust Supabase integration for persistent storage of notes, analytics, and agent memory.
-*   **Testing**: 64 Playwright E2E tests and Locust load testing for reliability verification.
+*   **Database**: Supabase integration for persistent storage of notes, analytics, and agent memory.
+*   **Testing**: Locust load testing for reliability verification.
 
 ---
 
