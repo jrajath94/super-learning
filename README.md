@@ -25,16 +25,16 @@ Powered by a sophisticated **Agent Orchestrator**, the system routes your reques
 *   **Frontend**: Modern Next.js application with a premium "Glassmorphism" UI, smooth animations, and optimized mobile experience.
 *   **Backend**: High-performance FastAPI with streaming responses to handle long-form video processing (60min+).
 *   **Database**: Robust Supabase integration for persistent storage of notes, analytics, and agent memory.
-*   **Testing**: Comprehensive suite with 60+ Playwright E2E tests and Locust load testing for production-grade reliability.
+*   **Testing**: 64 Playwright E2E tests and Locust load testing for reliability verification.
 
 ---
 
 ## 🛠️ Tech Stack
 *   **Core**: Next.js, React, TypeScript, Tailwind CSS
 *   **API**: FastAPI, Python 3.9+, Uvicorn
-*   **AI**: Google Gemini 2.5 Pro (via Google Generative AI Python SDK)
+*   **AI**: Google Generative AI (Gemini)
 *   **Storage**: Supabase (PostgreSQL + Auth)
-*   **Testing**: Playwright (E2E), Locust (Load Testing), Pytest (Backend)
+*   **Testing**: Playwright (E2E), Locust (Load Testing)
 
 ## 🚦 Getting Started
 
@@ -108,7 +108,7 @@ $$;
 ---
 
 ## 🧪 Quality Assurance
-We maintain a >90% test coverage and perform rigorous verification:
+Run E2E and load tests for reliability verification:
 ```bash
 # Run E2E Tests
 cd web
